@@ -13,7 +13,20 @@ return new class extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->string('type');
+            $table->string('size');
+            $table->string('neighborhood');
+            $table->string('street');
+            $table->string('landline_number');
+            $table->string('mobile_number');
+            $table->decimal('longitude', 9, 6);
+            $table->decimal('latitude', 9, 6);
+            $table->timestamp('issue_date'); // must be iso806
+            $table->string('status')->nullable();
+            $table->string('notes')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

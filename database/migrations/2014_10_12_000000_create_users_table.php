@@ -18,6 +18,9 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->timestamps();
+            $table->softDeletes();
+            // area
+            // supervisor (many to many)
             // let the company verify emails somehow
         });
     }
