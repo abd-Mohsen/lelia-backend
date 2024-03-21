@@ -17,11 +17,13 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->unsignedBigInteger('supervisor_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
             // area
             // supervisor (many to many)
             // let the company verify emails somehow
+            $table->foreign('supervisor_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 
