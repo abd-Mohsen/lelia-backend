@@ -26,10 +26,11 @@ return new class extends Migration
             $table->timestamp('issue_date'); // must be iso806
             $table->string('status')->nullable();
             $table->string('notes')->nullable();
-            $table->foreignIdFor(User::class);
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 

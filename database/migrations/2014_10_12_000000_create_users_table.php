@@ -18,12 +18,14 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->unsignedBigInteger('supervisor_id')->nullable();
+            $table->unsignedBigInteger('role_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
             // area
             // supervisor (many to many)
             // let the company verify emails somehow
             $table->foreign('supervisor_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('role_id')->references('id')->on('roles')->onDelete('set null');
         });
     }
 
