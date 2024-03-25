@@ -20,7 +20,7 @@ class UserController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required|string|min:8',
             'phone' => 'required|string|min:4',
-            'role' => 'required|in:dentist,supplier',
+            'role_id' => 'required|in:supervisor,salesman',
         ]);
 
         $role_id = Role::where('title' , $data['role'])->first()->id;
@@ -38,9 +38,10 @@ class UserController extends Controller
         
         return response()->json([
             'message' => 'User registered successfully',
-            'access_token' => $user->createToken("access token")->plainTextToken,
+            //'access_token' => $user->createToken("access token")->plainTextToken,
         ], 201);
     }
+
 
     public function login(Request $request) : JsonResponse
     {
@@ -69,6 +70,7 @@ class UserController extends Controller
             'access_token' => $token,
         ]);
     }
+
 
     public function logout(Request $request) : JsonResponse
     {
