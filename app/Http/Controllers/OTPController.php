@@ -28,6 +28,7 @@ class OTPController extends Controller
         ]);
     }
 
+
     public function verifyRegisterOTP(Request $request) : JsonResponse
     {
         $user = $request->user();
@@ -44,6 +45,7 @@ class OTPController extends Controller
         return response()->json(true);
     }
 
+
     public function sendResetOTP(Request $request) : JsonResponse
     {
         $user = User::where('email', $request->email)->first();
@@ -54,6 +56,7 @@ class OTPController extends Controller
 
         return response()->json(['message' => 'Reset OTP sent successfully.'],201);
     }
+
 
     public function verifyResetOTP(Request $request) : JsonResponse
     {
@@ -72,6 +75,7 @@ class OTPController extends Controller
         $resetToken = Password::createToken($user);
         return response()->json(['reset_token' => $resetToken], 201);
     }
+
 
     public function resetPassword(Request $request) : JsonResponse
     {
@@ -98,6 +102,7 @@ class OTPController extends Controller
             ?  response()->json(true, 200)
             :  response()->json(["message" => "reset has failed"], 500);
     }
+    
 
     private function sendOTP($user, $otp){
         Mail::to($user->email)->send(new OTPMail($otp));

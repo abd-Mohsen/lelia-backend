@@ -23,6 +23,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'role_id',
+        'supervisor_id',
+        //'image_id',
     ];
 
     /**
@@ -32,7 +36,9 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'remember_token',
+        //'remember_token',
+        'email_verified_at',
+        'account_verified_at',
     ];
 
     /**
@@ -52,5 +58,11 @@ class User extends Authenticatable
         return [
             'name' => $this->name,
         ];
+    }
+
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 }

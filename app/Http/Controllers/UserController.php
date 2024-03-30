@@ -20,10 +20,21 @@ class UserController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required|string|min:8',
             'phone' => 'required|string|min:4',
-            'role_id' => 'required|in:supervisor,salesman',
+            'role' => 'required|in:supervisor,salesman',
+            'supervisor_id' => 'nullable|numeric',
         ]);
 
         $role_id = Role::where('title' , $data['role'])->first()->id;
+
+        $supervisor_id = null;
+
+        if(array_key_exists('supervisor_id', $data)){
+            $supervisor = User::find($data['supervisor_id']);
+            if(!$supervisor || $supervisor->role->title != 'supervisor'){
+                return response()->json(['message' => 'not a supervisor'], 400);
+            }
+            $supervisor_id = $supervisor->id;
+        } 
         
         //if user was an admin, handle it
         $user = User::create([
@@ -32,6 +43,7 @@ class UserController extends Controller
             'phone' => $data['phone'],
             'password' => bcrypt($data['password']),
             'role_id' => $role_id,
+            'supervisor_id' => $supervisor_id,
         ]);
 
         event(new Registered($user));

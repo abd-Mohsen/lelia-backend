@@ -50,6 +50,10 @@ return [
             'transport' => 'ses',
         ],
 
+        'resend' => [
+            'transport' => 'resend',
+        ],
+        
         'postmark' => [
             'transport' => 'postmark',
             // 'message_stream_id' => null,
