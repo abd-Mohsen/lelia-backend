@@ -50,7 +50,7 @@ class UserController extends Controller
         
         return response()->json([
             'message' => 'User registered successfully',
-            //'access_token' => $user->createToken("access token")->plainTextToken,
+            'access_token' => $user->createToken("access token")->plainTextToken,
         ], 201);
     }
 
@@ -70,6 +70,10 @@ class UserController extends Controller
         }
 
         $user = $request->user();
+
+        if(!$user->account_verified_at){
+            return response()->json(['message' => 'not verified from Letia'], 400);
+        }
 
         //delete user previous tokens 
         $user->tokens()->delete();
