@@ -127,5 +127,9 @@ class UserController extends Controller
     }
 
 
-    
+    public function getProfile(Request $request) : JsonResponse
+    {
+        $user = $request->user();
+        return response()->json(new UserResource($user));
+    }
 }

@@ -20,7 +20,7 @@ class UserResource extends JsonResource
             'user_name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,
-            'supervisor' => new UserResource(User::find($this->supervisor_id)),
+            'supervisor' => new UserResource($this->supervisor),
             'is_verified' => $this->hasVerifiedEmail(),
         ];
     }

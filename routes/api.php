@@ -28,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
                                         ->middleware(['signed','throttle:3,1'])
                                         ->name('verification.otp');
 
+    Route::get('/users/profile',[UserController::class,'getProfile']);
     Route::get('/users/my-subs',[UserController::class,'getMySubs']);
     Route::get('/users/my-supervisor',[UserController::class,'mySupervisor']);
 });

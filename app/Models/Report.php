@@ -16,6 +16,7 @@ class Report extends Model
     protected $fillable = [
         'title',
         //
+
     ];
 
     public function toSearchableArray()
@@ -23,5 +24,11 @@ class Report extends Model
         return [
             'title' => $this->title,
         ];
+    }
+
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
