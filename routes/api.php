@@ -27,8 +27,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/verify-register-otp', [OTPController::class,'verifyRegisterOTP'])
                                         ->middleware(['signed','throttle:3,1'])
                                         ->name('verification.otp');
+
+    Route::get('/users/my-subs',[UserController::class,'getMySubs']);
+    Route::get('/users/my-supervisor',[UserController::class,'mySupervisor']);
 });
 
 Route::post('/send-reset-otp',[OTPController::class,'sendResetOTP'])->middleware('throttle:3,1');
 Route::post('/verify-reset-otp',[OTPController::class,'verifyResetOTP'])->middleware('throttle:3,1');
 Route::post('/reset-password',[OTPController::class,'resetPassword']);
+
+Route::get('/users/supervisors',[UserController::class,'allSupervisors']);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -50,7 +51,7 @@ class UserController extends Controller
         
         return response()->json([
             'message' => 'User registered successfully',
-            'access_token' => $user->createToken("access token")->plainTextToken,
+            //'access_token' => $user->createToken("access token")->plainTextToken,
         ], 201);
     }
 
@@ -72,7 +73,7 @@ class UserController extends Controller
         $user = $request->user();
 
         if(!$user->account_verified_at){
-            return response()->json(['message' => 'not verified from Letia'], 400);
+            return response()->json(['message' => 'يرجى تأكيد الحساب من شركة ليليا أولاً'], 400);
         }
 
         //delete user previous tokens 
@@ -93,4 +94,38 @@ class UserController extends Controller
         $request->user()->tokens()->delete();
         return response()->json(true);
     }
+
+
+    public function getMySubs(Request $request) : JsonResponse
+    {
+        $user = $request->user();
+        if($user->role->title != "supervisor"){
+            return response()->json('you are not a supervisor', 400);
+        }
+        
+        $subs = $user->subordinates;
+        return response()->json(UserResource::collection($subs));
+    }
+
+
+    public function mySupervisor(Request $request) : JsonResponse
+    {
+        $user = $request->user();
+        if($user->role->title != "salesman"){
+            return response()->json('you are not a salesman', 400);
+        }
+        $supervisor = $user->supervisor;
+        return response()->json(new UserResource($supervisor));
+    }
+
+
+    public function allSupervisors(Request $request) : JsonResponse
+    {
+        $user = $request->user();
+        $supervisors = User::where("role_id", 2)->get();
+        return response()->json(UserResource::collection($supervisors));
+    }
+
+
+    
 }
