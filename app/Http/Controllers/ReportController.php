@@ -9,6 +9,7 @@ use Intervention\Image\Facades\Image;
 use App\Http\Resources\ReportResource;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Image as ImageModel;
+use Brick\Math\BigInteger;
 
 class ReportController extends Controller
 {
@@ -40,7 +41,7 @@ class ReportController extends Controller
             'mobile_number' => 'required|string|max:12|min:10',
             'longitude' => 'required|numeric',
             'latitude' => 'required|numeric',
-            'status' => 'required|bool',
+            'status' => 'nullable|in:slow,fair,fast',
             'issue_date' => 'required|date',
             'notes' => 'required|string|max:255|min:0',
             'images' => 'nullable|array',
@@ -48,9 +49,7 @@ class ReportController extends Controller
         ]);
                 
         
-        $this->uploadImages($request->file('image'), $data['title']); 
-        
-        Report::create([
+        $report = Report::create([
             'title' => $data['title'],
             'type' => $data['type'],
             'size' => $data['size'],
@@ -63,8 +62,10 @@ class ReportController extends Controller
             'status' => $data['status'],
             'issue_date' => $data['issue_date'],
             'notes' => $data['notes'],
-            'owner_id' => $request->user()->id,
+            'user_id' => $request->user()->id,
         ]);
+
+        $this->uploadImages($request->file('images'), $data['title'], $report->id); 
 
         return response()->json(['message' => 'report created successfully'], 201);
     }
@@ -88,6 +89,7 @@ class ReportController extends Controller
 
     public function destroy(string $id) : JsonResponse 
     {
+        // delete images files from server
         $this->authorize('delete', Report::class);
         Report::withTrashed()->findOrFail($id)->delete();
         return response()->json(null, 204);
@@ -104,7 +106,7 @@ class ReportController extends Controller
 
 
     // todo: for all images , delete the old ones when updating 
-    private function uploadImages(array $imageFiles, string $title): array
+    private function uploadImages(array $imageFiles, string $title, int $report_id): array
     {
         $uploadedImages = [];
 
@@ -115,7 +117,7 @@ class ReportController extends Controller
 
             $createdImage = ImageModel::create([
                 'path' => 'storage/report/' . $fileName,
-                'type' => 'report'
+                'report_id' =>  $report_id,
             ]);
 
             $uploadedImages[] = $createdImage->id;

@@ -26,7 +26,7 @@ class Report extends Model
         'status',
         'date',
         'notes',
-        'owner_id'
+        'user_id'
     ];
 
     public function toSearchableArray()
