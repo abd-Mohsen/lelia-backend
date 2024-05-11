@@ -15,8 +15,18 @@ class Report extends Model
 
     protected $fillable = [
         'title',
-        //
-
+        'type',
+        'size',
+        'neighborhood',
+        'street',
+        'landline_number',
+        'mobile_number',
+        'longitude',
+        'latitude',
+        'status',
+        'date',
+        'notes',
+        'owner_id'
     ];
 
     public function toSearchableArray()

@@ -23,10 +23,11 @@ class ReportResource extends JsonResource
             'neighborhood' => $this->neighborhood,
             'street' => $this->street,
             'landline_number' => $this->landline_number,
+            'mobile_number' => $this->mobile_number,
             'longitude' => $this->longitude,
             'latitude' => $this->latitude,
             'status' => $this->status,
-            'date' => $this->date,
+            'issue_date' => $this->issue_date,
             'notes' => $this->notes,
             'owner' => new UserResource($this->owner),
         ];

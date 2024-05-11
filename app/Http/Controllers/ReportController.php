@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Intervention\Image\Facades\Image;
 use App\Http\Resources\ReportResource;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Image as ImageModel;
 
 class ReportController extends Controller
 {
@@ -18,25 +19,54 @@ class ReportController extends Controller
     }
 
 
+    // handle images upload and store
 
     public function store(Request $request) : JsonResponse
     {
         //$this->authorize('create', Brand::class);
 
+        $user = $request->user();
+        if($user->role->title != 'salesman'){
+            return response()->json(['message' => 'فقط مندوب المبيعات يستطيع انشاء تقرير'], 400);
+        } 
+
         $data = $request->validate([
-            'title' => 'required|string|max:50|min:4',
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'title' => 'required|string|max:100|min:2',
+            'type' => 'required|in:retail,mall,pharmacy,supermarket',
+            'size' => 'required|in:small,medium,big',
+            'neighborhood' => 'required|string|max:50|min:2',
+            'street' => 'required|string|max:50|min:2',
+            'landline_number' => 'required|string|max:7|min:7',
+            'mobile_number' => 'required|string|max:12|min:10',
+            'longitude' => 'required|numeric',
+            'latitude' => 'required|numeric',
+            'status' => 'required|bool',
+            'issue_date' => 'required|date',
+            'notes' => 'required|string|max:255|min:0',
+            'images' => 'nullable|array',
+            'images.*' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
                 
         
-        $image = $this->uploadImage($request->file('image'), $data['title']); 
+        $this->uploadImages($request->file('image'), $data['title']); 
         
         Report::create([
             'title' => $data['title'],
-            'image' => $image,
+            'type' => $data['type'],
+            'size' => $data['size'],
+            'neighborhood' => $data['neighborhood'],
+            'street' => $data['street'],
+            'landline_number' => $data['landline_number'],
+            'mobile_number' => $data['mobile_number'],
+            'longitude' => $data['longitude'],
+            'latitude' => $data['latitude'],
+            'status' => $data['status'],
+            'issue_date' => $data['issue_date'],
+            'notes' => $data['notes'],
+            'owner_id' => $request->user()->id,
         ]);
 
-        return response()->json(['message' => 'Brand created successfully'], 201);
+        return response()->json(['message' => 'report created successfully'], 201);
     }
 
    
@@ -49,25 +79,10 @@ class ReportController extends Controller
 
     
 
-    public function update(Request $request, string $id) : JsonResponse
-    {
-        // $brand = Brand::findOrFail($id);
-
-        // $this->authorize('update', $brand);
-
-        // $data = $request->validate([
-        //     'title' => 'nullable|string|max:50|min:4',
-        //     'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
-        // ]);
-
-        // $image = array_key_exists('image', $data) ? $this->uploadImage($request->file('image'), $data['title']) : null;
-        
-        // if($data['title']) $brand->title = $data['title']; 
-        // if($image) $brand->image_id = $image->id; 
-        // $brand->save();
-    
-        return response()->json(['message' => 'Brand updated successfully']);
-    }
+    // public function update(Request $request, string $id) : JsonResponse
+    // {
+    //     return response()->json(['message' => 'report updated successfully']);
+    // }
 
  
 
@@ -88,13 +103,24 @@ class ReportController extends Controller
 
 
 
-    private function uploadImage($imageFile, string $title) : string
-    { 
-        $imgData = Image::make($imageFile)->fit(720, 1280)->encode('jpg'); // import
-        $fileName = $title . '-' . uniqid() . '.jpg';
-        Storage::put('public/brand/' . $fileName , $imgData);
+    // todo: for all images , delete the old ones when updating 
+    private function uploadImages(array $imageFiles, string $title): array
+    {
+        $uploadedImages = [];
 
-        return 'storage/brand/' . $fileName;
-            
+        foreach ($imageFiles as $imageFile) {
+            $imgData = Image::make($imageFile)->fit(720, 1280)->encode('jpg');
+            $fileName = $title . '-' . uniqid() . '.jpg';
+            Storage::put('public/report/' . $fileName, $imgData);
+
+            $createdImage = ImageModel::create([
+                'path' => 'storage/report/' . $fileName,
+                'type' => 'report'
+            ]);
+
+            $uploadedImages[] = $createdImage->id;
+        }
+
+        return $uploadedImages;
     }
 }
