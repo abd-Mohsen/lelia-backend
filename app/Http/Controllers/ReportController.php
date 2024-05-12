@@ -9,7 +9,6 @@ use Intervention\Image\Facades\Image;
 use App\Http\Resources\ReportResource;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Image as ImageModel;
-use Brick\Math\BigInteger;
 
 class ReportController extends Controller
 {
@@ -24,7 +23,7 @@ class ReportController extends Controller
 
     public function store(Request $request) : JsonResponse
     {
-        //$this->authorize('create', Brand::class);
+        $this->authorize('create', Report::class);
 
         $user = $request->user();
         if($user->role->title != 'salesman'){
@@ -89,15 +88,24 @@ class ReportController extends Controller
 
     public function destroy(string $id) : JsonResponse 
     {
-        // delete images files from server
-        $this->authorize('delete', Report::class);
-        Report::withTrashed()->findOrFail($id)->delete();
+        $report = Report::findOrFail($id);
+
+        $this->authorize('delete', $report);
+
+        foreach ($report->images as $image) {
+            $fileName = str_replace('storage/report/', '', $image->path);
+            Storage::delete('public/report/' . $fileName);
+            $image->delete();
+        }
+
+        $report->delete();
+
         return response()->json(null, 204);
     }
 
 
 
-    public function search($query) : JsonResponse //to save bandwidth and memory, create a simpler resource 
+    public function search($query) : JsonResponse 
     { 
         $reports =  ReportResource::collection(Report::search($query)->get());
         return response()->json($reports);
@@ -111,7 +119,7 @@ class ReportController extends Controller
         $uploadedImages = [];
 
         foreach ($imageFiles as $imageFile) {
-            $imgData = Image::make($imageFile)->fit(720, 1280)->encode('jpg');
+            $imgData = Image::make($imageFile)->fit(1280, 720)->encode('jpg');
             $fileName = $title . '-' . uniqid() . '.jpg';
             Storage::put('public/report/' . $fileName, $imgData);
 

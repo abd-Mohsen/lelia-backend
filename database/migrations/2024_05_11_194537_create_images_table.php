@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('path');
             $table->foreignIdFor(Report::class);
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('report_id')->references('id')->on('reports')->onDelete('cascade');
         });
