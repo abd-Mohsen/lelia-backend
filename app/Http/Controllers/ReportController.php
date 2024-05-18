@@ -38,11 +38,11 @@ class ReportController extends Controller
             'street' => 'required|string|max:50|min:2',
             'landline_number' => 'required|string|max:7|min:7',
             'mobile_number' => 'required|string|max:12|min:10',
-            'longitude' => 'required|numeric',
-            'latitude' => 'required|numeric',
-            'status' => 'nullable|in:slow,fair,fast',
+            'longitude' => 'required|string',
+            'latitude' => 'required|string',
+            'status' => 'required|in:slow,fair,fast,unavailable',
             'issue_date' => 'required|date',
-            'notes' => 'required|string|max:255|min:0',
+            'notes' => 'nullable|string|max:255|min:0',
             'images' => 'nullable|array',
             'images.*' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
@@ -56,9 +56,9 @@ class ReportController extends Controller
             'street' => $data['street'],
             'landline_number' => $data['landline_number'],
             'mobile_number' => $data['mobile_number'],
-            'longitude' => $data['longitude'],
-            'latitude' => $data['latitude'],
-            'status' => $data['status'],
+            'longitude' => floatval($data['longitude']),
+            'latitude' => floatval($data['latitude']),
+            'status' => $data['status'] == 'unavailable' ? null : $data['status'], // did that because i cant upload null from dart http package(multipart file)
             'issue_date' => $data['issue_date'],
             'notes' => $data['notes'],
             'user_id' => $request->user()->id,
@@ -92,10 +92,10 @@ class ReportController extends Controller
 
         $this->authorize('delete', $report);
 
-        foreach ($report->images as $image) {
-            $fileName = str_replace('storage/report/', '', $image->path);
+        foreach ($report->images as $imageFile) {
+            $fileName = str_replace('storage/report/', '', $imageFile->path);
             Storage::delete('public/report/' . $fileName);
-            $image->delete();
+            $imageFile->delete();
         }
 
         $report->delete();

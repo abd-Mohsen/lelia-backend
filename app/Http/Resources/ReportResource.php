@@ -15,21 +15,32 @@ class ReportResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $translation = [
+            "small" => "صغير",
+            "medium" => "وسط",
+            "big" => "كبير",
+            "retail" => "بائع جملة",
+            "mall" => "مركز تجاري (مول)",
+            "pharmacy" => "صيدلية",
+            "supermarket" => "بقالية",
+        ];
+
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'type' => $this->type,
-            'size' => $this->size,
+            'type' => $translation[$this->type],
+            'size' => $translation[$this->size],
             'neighborhood' => $this->neighborhood,
             'street' => $this->street,
             'landline_number' => $this->landline_number,
             'mobile_number' => $this->mobile_number,
-            'longitude' => $this->longitude,
-            'latitude' => $this->latitude,
+            'longitude' => (double) $this->longitude,
+            'latitude' => (double) $this->latitude,
             'status' => $this->status,
             'issue_date' => $this->issue_date,
             'notes' => $this->notes,
             'owner' => new UserResource($this->owner),
+            'images' => ImageResource::collection($this->images),
         ];
     }
 }
