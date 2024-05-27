@@ -92,7 +92,7 @@ class ReportController extends Controller
         $this->authorize('view', Report::class);
         //policy isnt fucking working so did this here
         if($salesman->role->title != 'salesman' or $salesman->supervisor->id != $user->id){
-            return response()->json(['message' => 'الموظف ليس مندوب او الموظف ليس مندوباً لديك'], 400);
+            return response()->json(['message' => 'الموظف ليس مندوباً لديك'], 400);
         }
         $reports =  ReportResource::collection($salesman->reports);
         return response()->json($reports);

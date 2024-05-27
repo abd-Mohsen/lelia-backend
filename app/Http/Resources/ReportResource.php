@@ -23,6 +23,9 @@ class ReportResource extends JsonResource
             "mall" => "مركز تجاري (مول)",
             "pharmacy" => "صيدلية",
             "supermarket" => "بقالية",
+            "slow" => "بطيئة",
+            "fair" => "مقبولة",
+            "fast" => "جيدة",
         ];
 
         return [
@@ -36,7 +39,7 @@ class ReportResource extends JsonResource
             'mobile_number' => $this->mobile_number,
             'longitude' => (double) $this->longitude,
             'latitude' => (double) $this->latitude,
-            'status' => $this->status,
+            'status' => $this->status == null ? null : $translation[$this->status],
             'issue_date' => $this->issue_date,
             'notes' => $this->notes,
             'owner' => new UserResource($this->owner),

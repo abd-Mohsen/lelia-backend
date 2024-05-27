@@ -15,13 +15,20 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $translation = [
+            "supervisor" => "مشرف",
+            "salesman" => "مندوب مبيعات",
+            "admin" => "مسؤول",
+        ];
+
         return [
             'id' => $this->id,
             'user_name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,
+            'role' => $translation[$this->role->title],
             'supervisor' => new UserResource($this->supervisor),
-            'is_verified' => $this->hasVerifiedEmail(),
+            'is_verified' => $this->hasVerifiedEmail(), 
         ];
     }
 }
