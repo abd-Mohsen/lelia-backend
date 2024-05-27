@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/my-supervisor',[UserController::class,'mySupervisor']);
     Route::get('/logout', [UserController::class, 'logout']);
 
+    Route::get('/reports/supervisor',[ReportController::class,'mySubsReports']);
 
     Route::apiResources([
         'reports'=> ReportController::class,

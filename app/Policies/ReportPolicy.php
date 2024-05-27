@@ -7,14 +7,25 @@ use App\Models\User;
 
 class ReportPolicy
 {
-    public function viewAny(User $user): bool
+    public function viewAll(User $user): bool
     {
-        return true;
+        //return true;
+        return in_array($user->role->title , ['admin']);
     }
 
-    public function view(User $user, Report $report): bool
+    public function viewAny(User $user): bool
     {
-        return true;
+        return in_array($user->role->title , ['supervisor']);
+    }
+
+    public function viewMine(User $user): bool
+    {
+        return in_array($user->role->title , ['salesman']);
+    }
+
+    public function view(User $user): bool
+    {   
+        return in_array($user->role->title , ['admin', 'supervisor']);
     }
 
     /**

@@ -76,5 +76,13 @@ class User extends Authenticatable
         return $this->hasMany(User::class, 'supervisor_id', 'id');
     }
 
-    
+    public function reports()
+    {
+        return $this->hasMany(Report::class, 'user_id', 'id');
+    }
+
+    public function supervisorAllReports()
+    {
+        return $this->hasManyThrough(Report::class, User::class, 'supervisor_id', 'user_id');
+    }
 }

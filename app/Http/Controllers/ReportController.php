@@ -2,24 +2,36 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Models\Image as ImageModel;
 use Intervention\Image\Facades\Image;
 use App\Http\Resources\ReportResource;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Image as ImageModel;
 
 class ReportController extends Controller
 {
-    public function index() : JsonResponse//add pagination
+    // get all the reports of a logged in salesman
+    public function index(Request $request) : JsonResponse//add pagination
     {
-        $reports = Report::all();
+        $this->authorize('viewMine',Report::class);
+        $reports = $request->user()->reports;
         return response()->json(ReportResource::collection($reports));
     }
 
 
-    // handle images upload and store
+
+    // get the reports of all a supervisor subs
+    public function mySubsReports(Request $request) : JsonResponse//add pagination
+    {
+        $this->authorize('viewAny',Report::class);
+        $reports = $request->user()->supervisorAllReports;
+        return response()->json(ReportResource::collection($reports));
+    }
+
+
 
     public function store(Request $request) : JsonResponse
     {
@@ -27,7 +39,7 @@ class ReportController extends Controller
 
         $user = $request->user();
         if($user->role->title != 'salesman'){
-            return response()->json(['message' => 'فقط مندوب المبيعات يستطيع انشاء تقرير'], 400);
+            return response()->json(['message' => 'فقط مندوب المبيعات يمكنه إنشاء تقرير'], 400);
         } 
 
         $data = $request->validate([
@@ -71,20 +83,22 @@ class ReportController extends Controller
 
    
 
-    public function show(string $id) : JsonResponse
+    // note: this return the reports of the user with id, not the report with id
+    // add pagination
+    public function show(string $id,Request $request) : JsonResponse
     {
-        $report = Report::findOrFail($id);
-        return response()->json(new ReportResource($report));
+        $user = $request->user();
+        $salesman = User::findOrFail($id);
+        $this->authorize('view', Report::class);
+        //policy isnt fucking working so did this here
+        if($salesman->role->title != 'salesman' or $salesman->supervisor->id != $user->id){
+            return response()->json(['message' => 'الموظف ليس مندوب او الموظف ليس مندوباً لديك'], 400);
+        }
+        $reports =  ReportResource::collection($salesman->reports);
+        return response()->json($reports);
     }
 
     
-
-    // public function update(Request $request, string $id) : JsonResponse
-    // {
-    //     return response()->json(['message' => 'report updated successfully']);
-    // }
-
- 
 
     public function destroy(string $id) : JsonResponse 
     {
@@ -105,6 +119,7 @@ class ReportController extends Controller
 
 
 
+    //add pagination
     public function search($query) : JsonResponse 
     { 
         $reports =  ReportResource::collection(Report::search($query)->get());
@@ -133,4 +148,9 @@ class ReportController extends Controller
 
         return $uploadedImages;
     }
+
+    // public function update(Request $request, string $id) : JsonResponse
+    // {
+    //     return response()->json(['message' => 'report updated successfully']);
+    // }
 }

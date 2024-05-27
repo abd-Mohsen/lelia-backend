@@ -82,7 +82,7 @@ class UserController extends Controller
         $token = $user->createToken('access token')->plainTextToken;
 
         return response()->json([
-            'user' => $user->id,
+            'id' => $user->id,
             'role' => $user->role->title,
             'access_token' => $token,
         ]);
@@ -96,6 +96,7 @@ class UserController extends Controller
     }
 
 
+    // only return those verified by the company
     public function getMySubs(Request $request) : JsonResponse
     {
         $user = $request->user();
