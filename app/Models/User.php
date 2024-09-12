@@ -86,3 +86,4 @@ class User extends Authenticatable
         return $this->hasManyThrough(Report::class, User::class, 'supervisor_id', 'user_id');
     }
 }
+// TODO create a table to map every supervisor to their area

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 class ReportController extends Controller
 {
     // get all the reports of a logged in salesman
-    public function index(Request $request) : JsonResponse//add pagination
+    public function index(Request $request) : JsonResponse//TODO add pagination
     {
         $this->authorize('viewMine',Report::class);
         $reports = $request->user()->reports;
@@ -24,7 +24,7 @@ class ReportController extends Controller
 
 
     // get the reports of all a supervisor subs
-    public function mySubsReports(Request $request) : JsonResponse//add pagination
+    public function mySubsReports(Request $request) : JsonResponse// TODO add pagination
     {
         $this->authorize('viewAny',Report::class);
         $reports = $request->user()->supervisorAllReports;
@@ -37,6 +37,7 @@ class ReportController extends Controller
     {
         $this->authorize('create', Report::class);
 
+        //TODO put this in policy
         $user = $request->user();
         if($user->role->title != 'salesman'){
             return response()->json(['message' => 'فقط مندوب المبيعات يمكنه إنشاء تقرير'], 400);
@@ -84,7 +85,7 @@ class ReportController extends Controller
    
 
     // note: this return the reports of the user with id, not the report with id
-    // add pagination
+    //TODO add pagination
     public function show(string $id,Request $request) : JsonResponse
     {
         $user = $request->user();
@@ -119,7 +120,7 @@ class ReportController extends Controller
 
 
 
-    //add pagination
+    //TODO add pagination
     public function search($query) : JsonResponse 
     { 
         $reports =  ReportResource::collection(Report::search($query)->get());
@@ -128,7 +129,7 @@ class ReportController extends Controller
 
 
 
-    // todo: for all images , delete the old ones when updating 
+    // TODO for all images , delete the old ones when updating 
     private function uploadImages(array $imageFiles, string $title, int $report_id): array
     {
         $uploadedImages = [];

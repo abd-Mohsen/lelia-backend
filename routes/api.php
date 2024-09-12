@@ -42,6 +42,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResources([
         'reports'=> ReportController::class,
     ]);
+
+    //dashboard
+    Route::get('/users/role-counts', [UserController::class, 'getRoleCounts']);
 });
 
 Route::post('/send-reset-otp',[OTPController::class,'sendResetOTP'])->middleware('throttle:3,1');
