@@ -59,6 +59,7 @@ class UserController extends Controller
 
     public function login(Request $request) : JsonResponse
     {
+        //TODO send a header that tells if the request is sent from app or dashboard, to prevent admin from accessing app and vice versa
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
@@ -133,21 +134,5 @@ class UserController extends Controller
     {
         $user = $request->user();
         return response()->json(new UserResource($user));
-    }
-
-    
-    public function getRoleCounts(): JsonResponse
-    { //admin only
-        $roleCounts = User::with('role')
-            ->select('role_id')
-            ->groupBy('role_id')
-            ->selectRaw('count(*) as count')
-            ->get()
-            ->mapWithKeys(function ($item) {
-                $roleTitle = $item->role->title;
-                return [$roleTitle => $item->count];
-            });
-
-        return response()->json($roleCounts);
     }
 }

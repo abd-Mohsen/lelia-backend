@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OTPController;
@@ -44,7 +45,8 @@ Route::middleware('auth:sanctum')->group(function () {
     ]);
 
     //dashboard
-    Route::get('/users/role-counts', [UserController::class, 'getRoleCounts']);
+    Route::get('/dashboard/role-counts', [AdminController::class, 'getRoleCounts']);
+    Route::get('/dashboard/top-salesmen', [AdminController::class, 'topSalesMen']);
 });
 
 Route::post('/send-reset-otp',[OTPController::class,'sendResetOTP'])->middleware('throttle:3,1');
