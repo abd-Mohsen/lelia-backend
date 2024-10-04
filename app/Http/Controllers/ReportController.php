@@ -150,8 +150,28 @@ class ReportController extends Controller
         return $uploadedImages;
     }
 
-    // public function update(Request $request, string $id) : JsonResponse
-    // {
-    //     return response()->json(['message' => 'report updated successfully']);
-    // }
+    public function exportReports(Request $request): JsonResponse
+    {
+        //TODO: allow only if admin, or if supervisor and the salesman belongs to him
+        $data = $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'user_id' => 'nullable|exists:users,id', // Ensure user_id is valid if provided
+        ]);
+
+        $startDate = $data['start_date'];
+        $endDate = $data['end_date'];
+        $userId = $data['user_id'];
+
+        // Query to get reports based on the provided parameters
+        $query = Report::whereBetween('created_at', [$startDate, $endDate]);
+
+        // Filter by user_id if provided
+        if ($userId) $query->where('user_id', $userId);
+
+        // Execute the query and get the results
+        $reports = $query->get();
+
+        return response()->json(ReportResource::collection($reports));
+    }
 }

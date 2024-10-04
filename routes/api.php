@@ -44,6 +44,8 @@ Route::middleware('auth:sanctum')->group(function () {
         'reports'=> ReportController::class,
     ]);
 
+    Route::post('/reports/export', [ReportController::class, 'exportReports']);
+
     //dashboard
     Route::get('/dashboard/role-counts', [AdminController::class, 'getRoleCounts']);
     Route::get('/dashboard/top-salesmen', [AdminController::class, 'topSalesMen']);
