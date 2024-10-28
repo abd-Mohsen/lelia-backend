@@ -14,20 +14,22 @@ use Illuminate\Support\Facades\Storage;
 class ReportController extends Controller
 {
     // get all the reports of a logged in salesman
-    public function index(Request $request) : JsonResponse//TODO add pagination
+    public function index(Request $request) : JsonResponse
     {
-        $this->authorize('viewMine',Report::class);
-        $reports = $request->user()->reports;
+        $this->authorize('viewMine', Report::class);
+        $limit = $request->input('limit', 10);
+        $reports = $request->user()->reports()->orderBy('created_at', 'desc')->paginate($limit);
         return response()->json(ReportResource::collection($reports));
     }
 
 
 
     // get the reports of all a supervisor subs
-    public function mySubsReports(Request $request) : JsonResponse// TODO add pagination
+    public function mySubsReports(Request $request) : JsonResponse
     {
-        $this->authorize('viewAny',Report::class);
-        $reports = $request->user()->supervisorAllReports;
+        $this->authorize('viewAny', Report::class);
+        $limit = $request->input('limit', 10);
+        $reports = $request->user()->supervisorAllReports()->orderBy('created_at', 'desc')->paginate($limit);
         return response()->json(ReportResource::collection($reports));
     }
 
@@ -86,18 +88,19 @@ class ReportController extends Controller
 
     // note: this return the reports of the user with id, not the report with id
     //TODO add pagination
-    public function show(string $id,Request $request) : JsonResponse
+    public function show(string $id, Request $request) : JsonResponse
     {
         $user = $request->user();
         $salesman = User::findOrFail($id);
         $this->authorize('view', Report::class);
-        //policy isnt fucking working so did this here
-        if($salesman->role->title != 'salesman' or $salesman->supervisor->id != $user->id){
+        if ($salesman->role->title != 'salesman' or $salesman->supervisor->id != $user->id) {
             return response()->json(['message' => 'الموظف ليس مندوباً لديك'], 400);
         }
-        $reports =  ReportResource::collection($salesman->reports);
-        return response()->json($reports);
+        $limit = $request->input('limit', 10);
+        $reports = $salesman->reports()->orderBy('created_at', 'desc')->paginate($limit);
+        return response()->json(ReportResource::collection($reports));
     }
+    
 
     
 

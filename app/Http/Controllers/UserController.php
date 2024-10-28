@@ -125,7 +125,7 @@ class UserController extends Controller
     public function allSupervisors(Request $request) : JsonResponse
     {
         $user = $request->user();
-        $supervisors = User::where("role_id", 2)->get();
+        $supervisors = User::where("role_id", 2)->whereNotNull("account_verified_at")->get();
         return response()->json(UserResource::collection($supervisors));
     }
 
