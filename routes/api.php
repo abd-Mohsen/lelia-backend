@@ -39,12 +39,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/logout', [UserController::class, 'logout']);
 
     Route::get('/reports/supervisor',[ReportController::class,'mySubsReports']);
+    Route::get('reports/search/{query}', [ReportController::class, 'search']);
+    Route::post('/reports/export', [ReportController::class, 'exportReports']);
 
     Route::apiResources([
         'reports'=> ReportController::class,
     ]);
 
-    Route::post('/reports/export', [ReportController::class, 'exportReports']);
 
     //dashboard
     Route::get('/dashboard/role-counts', [AdminController::class, 'getRoleCounts']);

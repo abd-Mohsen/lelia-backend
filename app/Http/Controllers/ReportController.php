@@ -87,7 +87,6 @@ class ReportController extends Controller
    
 
     // note: this return the reports of the user with id, not the report with id
-    //TODO add pagination
     public function show(string $id, Request $request) : JsonResponse
     {
         $user = $request->user();
@@ -123,16 +122,18 @@ class ReportController extends Controller
 
 
 
-    //TODO add pagination
-    public function search($query) : JsonResponse 
+    public function search(string $query, Request $request) : JsonResponse 
     { 
+        //TODO if user is supervisor, only search his subs reports, if admin, search in all
         $reports =  ReportResource::collection(Report::search($query)->get());
-        return response()->json($reports);
+        $limit = $request->input('limit', 10);
+        $reports = Report::search($query)->paginate($limit);
+        return response()->json(ReportResource::collection($reports));
     }
 
 
 
-    // TODO for all images , delete the old ones when updating 
+    // TODO delete images from storage when deleting report 
     private function uploadImages(array $imageFiles, string $title, int $report_id): array
     {
         $uploadedImages = [];
