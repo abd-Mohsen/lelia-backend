@@ -79,7 +79,9 @@ class ReportController extends Controller
             'user_id' => $request->user()->id,
         ]);
 
-        $this->uploadImages($request->file('images'), $data['title'], $report->id); 
+        if($request->file('images')){
+            $this->uploadImages($request->file('images'), $data['title'], $report->id); 
+        }
 
         return response()->json(['message' => 'report created successfully'], 201);
     }
