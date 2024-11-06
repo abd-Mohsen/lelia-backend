@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Report;
 use Illuminate\Http\Request;
@@ -168,6 +169,9 @@ class ReportController extends Controller
         $startDate = $data['start_date'];
         $endDate = $data['end_date'];
         $userId = $data['user_id'];
+
+        // Ensure that the end date includes the full day
+        $endDate = Carbon::parse($endDate)->endOfDay();
 
         // Query to get reports based on the provided parameters
         $query = Report::whereBetween('created_at', [$startDate, $endDate]);

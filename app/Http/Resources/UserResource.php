@@ -29,6 +29,8 @@ class UserResource extends JsonResource
             'role' => $translation[$this->role->title],
             'supervisor' => new UserResource($this->supervisor),
             'is_verified' => $this->hasVerifiedEmail(), 
+            'is_activated' => $this->account_verified_at != null,
+            'join_date' => $this->created_at,
         ];
     }
 }
