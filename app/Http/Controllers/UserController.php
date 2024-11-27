@@ -74,9 +74,9 @@ class UserController extends Controller
 
         $user = $request->user();
 
-        if(!$user->account_verified_at){
-            return response()->json(['message' => 'يرجى تأكيد الحساب من شركة ليليا أولاً'], 400);
-        }
+        // if(!$user->account_verified_at){
+        //     return response()->json(['message' => 'يرجى تأكيد الحساب من شركة ليليا أولاً'], 400);
+        // }
 
         //delete user previous tokens 
         $user->tokens()->delete();
