@@ -142,7 +142,7 @@ class ReportController extends Controller
         $uploadedImages = [];
 
         foreach ($imageFiles as $imageFile) {
-            $imgData = Image::make($imageFile)->fit(1280, 720)->encode('jpg');
+            $imgData = Image::make($imageFile)->encode('jpg', 75);
             $fileName = $title . '-' . uniqid() . '.jpg';
             Storage::put('public/report/' . $fileName, $imgData);
 
