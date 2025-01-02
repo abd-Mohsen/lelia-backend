@@ -52,7 +52,7 @@ class ReportController extends Controller
             'size' => 'required|in:small,medium,big',
             'neighborhood' => 'required|string|max:50|min:2',
             'street' => 'required|string|max:50|min:2',
-            'landline_number' => 'required|string|max:7|min:7',
+            'landline_number' => 'required|string|max:11|min:8',
             'mobile_number' => 'required|string|max:12|min:10',
             'longitude' => 'required|string',
             'latitude' => 'required|string',
